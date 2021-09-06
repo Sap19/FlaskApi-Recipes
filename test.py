@@ -12,7 +12,7 @@ class FlaskTest(unittest.TestCase):
 		self.assertEqual(statusCode, 200)
 		self.assertEqual(response.content_type, "application/json")
 
-	def test_recipes_post(self):
+	def test_recipes_post_new_data(self):
 		tester = app.test_client(self)
 		response = tester.post("recipes",json={
 			'name': 'butteredBagels' + str(random.randint(1, 999)),
@@ -22,6 +22,8 @@ class FlaskTest(unittest.TestCase):
 		statusCode = response.status_code
 		self.assertEqual(statusCode, 201)
 
+	def test_recipes_post_repeated_data(self):
+		tester = app.test_client(self)
 		response = tester.post("recipes",json={
 			'name': 'butteredBagels',
 			'ingredients': ['1 bagel','butter'],
