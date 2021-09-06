@@ -2,6 +2,7 @@ from run import app
 import json
 import unittest
 import random
+from os import path
 
 class FlaskTest(unittest.TestCase):
 
@@ -13,13 +14,21 @@ class FlaskTest(unittest.TestCase):
 		self.assertEqual(response.content_type, "application/json")
 
 	def test_recipes_post_new_data(self):
+		rand = str(random.randint(1, 999))
 		tester = app.test_client(self)
 		response = tester.post("recipes",json={
-			'name': 'butteredBagels' + str(random.randint(1, 999)),
+			'name': 'butteredBagels' + rand,
 			'ingredients': ['1 bagel','butter'],
 			'instructions': ['cut the bagel','spread butter on bagel']
 		})
 		statusCode = response.status_code
+		json_url = path.join(app.root_path, "../data.json")
+		jsonData = json.load(open(json_url))
+		found = False
+		for recipe in jsonData['recipes']:
+			if recipe['name'] == 'butteredBagels' + rand:
+				found = True
+		self.assertTrue(found)
 		self.assertEqual(statusCode, 201)
 
 	def test_recipes_post_repeated_data(self):
@@ -30,6 +39,13 @@ class FlaskTest(unittest.TestCase):
 			'instructions': ['cut the bagel','spread butter on bagel']
 		})
 		statusCode = response.status_code
+		json_url = path.join(app.root_path, "../data.json")
+		jsonData = json.load(open(json_url))
+		found = False
+		for recipe in jsonData['recipes']:
+			if recipe['name'] == 'butteredBagels':
+				found = True
+		self.assertTrue(found)
 		self.assertEqual(statusCode, 400)
 
 	def test_recipes_put(self):
@@ -40,8 +56,18 @@ class FlaskTest(unittest.TestCase):
 			'instructions': ['cut the bagel','spread butter on bagel']
 		})
 		statusCode = response.status_code
+		json_url = path.join(app.root_path, "../data.json")
+		jsonData = json.load(open(json_url))
+		found = False
+		for recipe in jsonData['recipes']:
+			if recipe['name'] == 'butteredBagels':
+				if recipe['ingredients'] == ['1 bagel','2tbs butter']:
+					found = True
+		self.assertTrue(found)
 		self.assertEqual(statusCode, 201)
 
+	def test_recipes_non_existent_put(self):
+		tester = app.test_client(self)
 		response = tester.put("recipes",json={
 			'name': 'pasta',
 			'ingredients': ['1 bagel','2tbs butter'],
