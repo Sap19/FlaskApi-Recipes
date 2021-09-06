@@ -15,15 +15,20 @@ class FlaskTest(unittest.TestCase):
 	def test_recipes_post(self):
 		tester = app.test_client(self)
 		response = tester.post("recipes",json={
+			'name': 'butteredBagels' + str(random.randint(1, 999)),
+			'ingredients': ['1 bagel','butter'],
+			'instructions': ['cut the bagel','spread butter on bagel']
+		})
+		statusCode = response.status_code
+		self.assertEqual(statusCode, 201)
+
+		response = tester.post("recipes",json={
 			'name': 'butteredBagels',
 			'ingredients': ['1 bagel','butter'],
 			'instructions': ['cut the bagel','spread butter on bagel']
 		})
 		statusCode = response.status_code
-		if statusCode == 400 :
-			self.assertEqual(statusCode, 400)
-		else:
-			self.assertEqual(statusCode, 201)
+		self.assertEqual(statusCode, 400)
 
 	def test_recipes_put(self):
 		tester = app.test_client(self)
