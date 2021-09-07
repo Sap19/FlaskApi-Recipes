@@ -5,7 +5,7 @@ import random
 from os import path
 
 class FlaskTest(unittest.TestCase):
-
+	# Test Recipe Get Url
 	def test_recipes_get(self):
 		tester = app.test_client(self)
 		response = tester.get("recipes")
@@ -13,6 +13,7 @@ class FlaskTest(unittest.TestCase):
 		self.assertEqual(statusCode, 200)
 		self.assertEqual(response.content_type, "application/json")
 
+	# Test Post recipe data with a new Recipe
 	def test_recipes_post_new_data(self):
 		rand = str(random.randint(1, 999))
 		tester = app.test_client(self)
@@ -31,6 +32,7 @@ class FlaskTest(unittest.TestCase):
 		self.assertTrue(found)
 		self.assertEqual(statusCode, 201)
 
+	# Test Post recipe data with a repeated Recipe cause it to 400
 	def test_recipes_post_repeated_data(self):
 		tester = app.test_client(self)
 		response = tester.post("recipes",json={
@@ -48,6 +50,7 @@ class FlaskTest(unittest.TestCase):
 		self.assertTrue(found)
 		self.assertEqual(statusCode, 400)
 
+	# Test Put recipe data and checks if it was updated
 	def test_recipes_put(self):
 		tester = app.test_client(self)
 		response = tester.put("recipes",json={
@@ -66,6 +69,7 @@ class FlaskTest(unittest.TestCase):
 		self.assertTrue(found)
 		self.assertEqual(statusCode, 201)
 
+	# Test Put recipe data thats does exsist and checks if doesnt
 	def test_recipes_non_existent_put(self):
 		tester = app.test_client(self)
 		response = tester.put("recipes",json={
@@ -77,10 +81,12 @@ class FlaskTest(unittest.TestCase):
 		self.assertEqual(statusCode, 404)
 		self.assertEqual(response.content_type, "application/json")
 
+	# Test get recipe details data and checks if it returns data
 	def test_recipes_details_get(self):
 		tester = app.test_client(self)
 		response = tester.get("recipes/details/butteredBagels")
 		statusCode = response.status_code
+		self.assertEqual(response.json['details']['name'], 'butteredBagels')
 		self.assertEqual(statusCode, 200)
 		self.assertEqual(response.content_type, "application/json")
 
